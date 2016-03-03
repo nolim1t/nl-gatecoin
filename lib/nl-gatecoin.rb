@@ -25,6 +25,21 @@ class Gatecoin
         else
           content_type = 'application/json'
         end
+        @parameters = ''
+        if arguments.length == 1 then
+          if arguments[0].kind_of? Hash
+            arguments[0].each{|key, value|
+              if @parameters.length > 0 then
+                @parameters = "#{@parameters},#{key.capitalize}=#{CGI::escape(value)}"
+              else
+                @parameters = "#{key}=#{CGI::escape(value)}"
+              end
+            }
+          end
+        end
+        if @parameters.length > 0 then
+          convert_undercores_to_slashes = "#{convert_undercores_to_slashes}?#{@parameters}"
+        end
         encode_message = (method_type.upcase + 'https://www.gatecoin.com/api/' + convert_undercores_to_slashes + content_type + nonce).downcase
         if @apisecret.length > 0 and @apikey.length > 0 then
           ssl_sign = OpenSSL::HMAC.digest('sha256', @apisecret, encode_message)
@@ -32,7 +47,7 @@ class Gatecoin
           if method_type == "get" then
             self.class.get('/' + convert_undercores_to_slashes, :headers => {'Accept' => 'application/json', 'Content-Type' => 'application/json', 'API_PUBLIC_KEY' => @apikey , 'API_REQUEST_SIGNATURE' => ssl_sign_encoded, 'API_REQUEST_DATE' => nonce}).to_json
           else
-            "Invalid method"
+            "Unsupported method"
           end
         else
           "Invalid API key and secret"
