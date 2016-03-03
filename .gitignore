@@ -2,3 +2,4 @@ test.*
 *.test
 .DS_Store
 Gemfile.lock
+*.gem
