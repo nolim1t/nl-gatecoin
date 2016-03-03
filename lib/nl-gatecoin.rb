@@ -20,17 +20,20 @@ class Gatecoin
         convert_undercores_to_slashes = convert_undercores_to_slashes.gsub(method_type + '/','')
 
         nonce = (Time.now).to_f.to_s # generate a new one each time
-        if method_type == 'get' then
+        if method_type.downcase == 'get' then
           content_type = ''
+        elsif
+          content_type = 'multipart/form-data'
         else
-          content_type = 'application/json'
+          # No content type
+          content_type = ''
         end
         @parameters = ''
         if arguments.length == 1 then
           if arguments[0].kind_of? Hash
             arguments[0].each{|key, value|
               if @parameters.length > 0 then
-                @parameters = "#{@parameters},#{key.capitalize}=#{CGI::escape(value)}"
+                @parameters = "#{@parameters}&#{key.capitalize}=#{CGI::escape(value)}"
               else
                 @parameters = "#{key}=#{CGI::escape(value)}"
               end
@@ -44,8 +47,10 @@ class Gatecoin
         if @apisecret.length > 0 and @apikey.length > 0 then
           ssl_sign = OpenSSL::HMAC.digest('sha256', @apisecret, encode_message)
           ssl_sign_encoded = Base64.encode64(ssl_sign).to_s.gsub("\n",'')
-          if method_type == "get" then
+          if method_type.downcase == "get" then
             self.class.get('/' + convert_undercores_to_slashes, :headers => {'Accept' => 'application/json', 'Content-Type' => 'application/json', 'API_PUBLIC_KEY' => @apikey , 'API_REQUEST_SIGNATURE' => ssl_sign_encoded, 'API_REQUEST_DATE' => nonce}).to_json
+          elsif method_type.downcase == "post"
+            self.class.post('/' + convert_undercores_to_slashes, :body => @parameters.to_s, :headers => {'Accept' => 'application/json', 'Content-Type' => content_type, 'API_PUBLIC_KEY' => @apikey , 'API_REQUEST_SIGNATURE' => ssl_sign_encoded, 'API_REQUEST_DATE' => nonce}).to_json
           else
             "Unsupported method"
           end
