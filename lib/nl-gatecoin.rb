@@ -19,14 +19,18 @@ class Gatecoin
         method_type = convert_undercores_to_slashes.split('/')[0]
         convert_undercores_to_slashes = convert_undercores_to_slashes.gsub(method_type + '/','')
 
-        nonce = (Time.now.to_f * 1000).to_i.to_s # generate a new one each time
-        content_type = 'application/json'
-        encode_message = method_type.upcase + 'https://www.gatecoin.com/api/' + convert_undercores_to_slashes + content_type + nonce
+        nonce = (Time.now).to_f.to_s # generate a new one each time
+        if method_type == 'get' then
+          content_type = ''
+        else
+          content_type = 'application/json'
+        end
+        encode_message = (method_type.upcase + 'https://www.gatecoin.com/api/' + convert_undercores_to_slashes + content_type + nonce).downcase
         if @apisecret.length > 0 and @apikey.length > 0 then
-          ssl_sign = OpenSSL::HMAC.digest('sha512', @apisecret, encode_message)
+          ssl_sign = OpenSSL::HMAC.digest('sha256', @apisecret, encode_message)
           ssl_sign_encoded = Base64.encode64(ssl_sign).to_s.gsub("\n",'')
           if method_type == "get" then
-            self.class.get('/' + convert_undercores_to_slashes, :headers => {'Accept-Charset' => 'UTF-8', 'Accept' => content_type, 'Content-Type' => content_type, 'API_PUBLIC_KEY' => @apikey , 'API_REQUEST_SIGNATURE' => ssl_sign_encoded, 'API_REQUEST_DATE' => nonce}).to_json
+            self.class.get('/' + convert_undercores_to_slashes, :headers => {'Accept' => 'application/json', 'Content-Type' => 'application/json', 'API_PUBLIC_KEY' => @apikey , 'API_REQUEST_SIGNATURE' => ssl_sign_encoded, 'API_REQUEST_DATE' => nonce}).to_json
           else
             "Invalid method"
           end
