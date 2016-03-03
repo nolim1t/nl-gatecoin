@@ -2,7 +2,7 @@
 [![Gem Version](https://badge.fury.io/rb/nl-gatecoin.svg)](https://badge.fury.io/rb/nl-gatecoin)
 
 ## Status
-This is still under development. Use at your own risk!
+This is still under development and not an official library of Gatecoin. Use at your own risk!
 
 ## Installing
 ```bash
