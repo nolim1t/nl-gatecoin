@@ -22,7 +22,7 @@ class Gatecoin
         nonce = (Time.now).to_f.to_s # generate a new one each time
         if method_type.downcase == 'get' then
           content_type = ''
-        elsif
+        elsif method_type.downcase == 'post'
           content_type = 'multipart/form-data'
         else
           # No content type

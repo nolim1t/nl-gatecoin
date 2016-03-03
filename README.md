@@ -2,6 +2,20 @@
 ## Status
 This is still under development
 
+## Installing
+```bash
+gem build nl-gatecoin.gemspec
+gem install nl-gatecoin-X.X.X.gem
+```
+
+### The Gemfile method
+```ruby
+source 'https://rubygems.org'
+
+gem 'httparty'
+gem 'nl-gatecoin'
+```
+
 ## Example calls
 ### Get HKD Balance
 ```ruby
