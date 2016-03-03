@@ -24,6 +24,8 @@ class Gatecoin
           content_type = ''
         elsif method_type.downcase == 'post'
           content_type = 'multipart/form-data'
+        elsif method_type.downcase == 'pubget'
+          content_type = ''
         else
           # No content type
           content_type = ''
@@ -51,6 +53,8 @@ class Gatecoin
             self.class.get('/' + convert_undercores_to_slashes, :headers => {'Accept' => 'application/json', 'Content-Type' => 'application/json', 'API_PUBLIC_KEY' => @apikey , 'API_REQUEST_SIGNATURE' => ssl_sign_encoded, 'API_REQUEST_DATE' => nonce}).to_json
           elsif method_type.downcase == "post"
             self.class.post('/' + convert_undercores_to_slashes, :body => @parameters.to_s, :headers => {'Accept' => 'application/json', 'Content-Type' => content_type, 'API_PUBLIC_KEY' => @apikey , 'API_REQUEST_SIGNATURE' => ssl_sign_encoded, 'API_REQUEST_DATE' => nonce}).to_json
+          elsif method_type.downcase == "pubget"
+            self.class.get('/Public/' + convert_undercores_to_slashes, :headers => {'Accept' => 'application/json', 'Content-Type' => 'application/json'}).to_json
           else
             "Unsupported method"
           end
