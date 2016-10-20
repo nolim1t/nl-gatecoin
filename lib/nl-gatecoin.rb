@@ -7,7 +7,7 @@ require 'httparty'
 
 class Gatecoin
     include HTTParty
-    base_uri 'https://www.gatecoin.com/api'
+    base_uri 'https://api.gatecoin.com'
 
     def initialize(options={})
         @apisecret = ENV['gc_private_key']
